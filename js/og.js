@@ -40,7 +40,7 @@ $('.octaglyph').each(function(){
 			},
                         bufferComplete: todo,
                         bufferUndo: function(){
-				o.status.buffer.pop;
+				o.status.buffer.pop();
 				o.ogcore.updateBufferDisplay();
 			},
                         setButtonText: function(button,text){
@@ -50,12 +50,26 @@ $('.octaglyph').each(function(){
                                 	textHolder.append(text);
                                 }
                         },
+                        setButtonType: function(button,type){
+                        	var textHolder = og.find('.'+button+'>a');
+				var types = ['append', 'bufferUndo', 'unterminated'];
+				for (var i in types){
+                               		textHolder.removeClass( 'og-a-' + types[i] );
+				}
+                                if (type) { // check for definedness
+                                	textHolder.addClass('og-a-'+type);
+                                }
+                        },
                         showHints: function(stack){
                         	var layout = o.ogcore.findLayout(stack);
                                 for (var i in o.const.classes) {
                                 	var ogclass = o.const.classes[i];
-                                        var text = layout ? layout[ogclass] : '';
+                                        var text = layout.continue ? layout.continue[ogclass].label : '';
+					var type = layout.continue ? 
+						layout.continue[ogclass].terminate ? 
+							layout.continue[ogclass].terminate.action : 'unterminated' : '';
                                 	o.ogcore.setButtonText(ogclass, text);
+					o.ogcore.setButtonType(ogclass, type);
                                 }
                         },
                         stackTempAppend: function(ogclass){
@@ -74,20 +88,49 @@ $('.octaglyph').each(function(){
                         findLayout: function(stack){
                         	var current = [o.layout]; // to avoid modifying layout
                         	for (var i in stack){
-                                	if (!current[0]){
+                                	if (!current[0].continue){
                                 		return {};
                                         }
-                                	current = [ current[ 0 ][ stack[i] ] ];
+                                	current = [ current[ 0 ].continue[ stack[i] ] ];
                                 }
                                 return current[0];
                         },
 			loadLayout: function(layout){
+				var upgrader ;
+				upgrader = function(original){
+					var newLayout = {
+						continue: {}
+					};
+					if (typeof original == typeof 'string'){
+						if (original == '<'){
+							return {
+								label: 'Bksp',
+								terminate: {
+									action: 'bufferUndo'
+								}
+							}
+						}
+						return {
+							label: original,
+							terminate: {
+								action: 'append',
+								content: original
+							}
+						}
+					}
+					else if (original && typeof (original) == typeof ({})) {
+						for (var i in o.const.classes) {
+							var ogclass = o.const.classes[i]
+							newLayout.continue[ogclass] = upgrader(original[ogclass]);
+						}
+						return newLayout;
+					}
+					else {
+						return {};
+					}
+				};
 				var loadedLayout = {};
-				for (var i in layout) {
-					loadedLayout[i] = layout[i];
-					// But actually we need to recurse through and process it.
-				}
-				o.layout = layout;
+				o.layout = upgrader(layout);
 			},
 			loadLayoutKey: function(key){
 				var loadedKey = {};
@@ -109,12 +152,13 @@ $('.octaglyph').each(function(){
                 layout: {},
 		status: {
                 	stack:  [],
-                	buffer: []
+                	buffer: [],
+			bufferType: null //indicate if we are in the middle of a touch
                 }
         };
 
 	o.ogcore.loadLayout(_ogDefaultLayout);
-
+	
 	og.find('li').each(function(){
         	var ogclass = $(this).attr('class');
                 var btn = $(this).find('a');
@@ -135,9 +179,17 @@ $('.octaglyph').each(function(){
 						newStack.push(ogclass);
 						var action = o.ogcore.findLayout(newStack);
 						console.log (action);
-						if (typeof(action) == typeof 'string') {
-							o.ogcore.bufferAppend(action);
-							o.ogcore.stackClear();
+						if (action.terminate) {
+							if (action.terminate.action == 'append') {
+								o.ogcore.bufferAppend(action.terminate.content);
+								o.ogcore.stackClear();
+								o.ogcore.showHints(o.status.stack);
+							}
+							else if (action.terminate.action == 'bufferUndo'){
+								o.ogcore.bufferUndo();
+								o.ogcore.stackClear();
+								o.ogcore.showHints(o.status.stack);
+							}
 						}
 						else {
 							o.ogcore.stackAppend(ogclass);

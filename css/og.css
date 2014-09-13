@@ -72,3 +72,10 @@
 	z-index:10000;
 
 }
+.og-a-bufferUndo {
+	font-style: italic;
+	font-weight: normal;
+}
+.og-a-append {
+	font-weight: bold;	
+}
