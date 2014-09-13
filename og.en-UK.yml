@@ -1,0 +1,94 @@
+mc:
+  action: 'reset'
+tl:
+  tl: ~
+  tc: "'"
+  tr: '"'
+  ml: '$'
+  mc: ~
+  mr: '%'
+  bl: '#'
+  bc: '@'
+  br: '\\'
+ml: 
+  tl: u
+  tc: o
+  tr: i
+  ml: ~
+  mc: ~
+  mr: e
+  bl: y
+  bc: h
+  br: a
+mr:
+  tl: n
+  tc: d
+  tr: m
+  ml: t
+  mc: ~
+  mr: ~
+  bl: s
+  bc: r
+  br: x
+tr:
+  tl: b
+  tc: l
+  tr: ~
+  ml: c
+  mc: ~
+  mr: k
+  bl: f
+  bc: g
+  br: j
+
+br:
+  tl: p
+  tc: v
+  tr: z
+  ml: w
+  mc: ~
+  mr: '.'
+  bl: q
+  bc: ','
+  br: ~
+bl:
+  tl: '?'
+  tc: '!'
+  tr: '/'
+  ml: '='
+  mc: ~
+  mr: '*'
+  bl: ~
+  bc: '-'
+  br: '+'
+
+bc:
+  tl: '<'
+  tc: '^'
+  tr: '>'
+  ml: ':'
+  mc: ~
+  mr: '_'
+  bl: ';'
+  bc: ~
+  br: ' '
+tc:
+  tl: '('
+  tc: ~
+  tr: ')'
+  ml: '['
+  mc: ~
+  mr: ']'
+  bl: '{'
+  bc: '|'
+  br: '}'
+
+#  tl: 
+#  tc: 
+#  tr: 
+#  ml: 
+#  mc: ~
+#  mr: 
+#  bl: 
+#  bc: 
+#  br: 

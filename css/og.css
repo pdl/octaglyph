@@ -1,0 +1,74 @@
+.octaglyph {
+	font-family: "Roboto", "Droid Sans", "Liberation Sans", sans-serif;
+}
+.octaglyph ul {
+	width: 13em;
+	padding: 1em;
+}
+.octaglyph ul li {
+	border-radius: 50%;
+        height: 3em;
+        width: 3em;
+        display: inline-block;
+        margin: 0.25em;
+        text-align: center;
+        vertical-align: middle;
+        background-color: #f0f0f0;
+        position: relative;
+}
+.octaglyph ul li:hover {
+	box-shadow: 0 0 4px #000;
+}
+.octaglyph .tl {
+	background-color: #a75283;
+}
+.octaglyph .tc {
+	top: -1.2em;
+	background-color: #d18567;
+}
+.octaglyph .tr {
+	background-color: #d1ad67;
+}
+.octaglyph .ml {
+	left: -1.2em;
+	background-color: #684c8e;
+}
+.octaglyph .mc {
+	background-color: #e0e0e0;
+}
+.octaglyph .mr {
+	left: 1.2em;
+	background-color: #d1c767;
+}
+.octaglyph .bl {
+	background-color: #4c608c;
+}
+.octaglyph .bc {
+	top: 1.2em;
+	background-color: #478f70;
+}
+.octaglyph .br {
+	background-color: #a2c360;
+}
+
+.octaglyph a {
+	border: none;
+	background: transparent;
+	position: absolute;
+	display: inline-block;
+	width: 4em;
+	height: 4em;
+	top: -0.5em;
+	left: -0.5em;
+	border-radius: 50%;
+	line-height: 4em;
+	cursor: pointer;
+
+}
+.octaglyph a:focus {
+	background: rgba(255,255,255,0.25)
+}
+.octaglyph .ui-draggable-dragging {
+	z-index:10000;
+
+}
