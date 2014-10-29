@@ -59,3 +59,32 @@ Vowels
 5 diaeresis
 6 currency
 
+===
+
+Populating the rings
+
+Given a corpus of words,
+
+And given fixed position for 26 letters,
+
+Find the most frequent word form at any given 'release point', make that the action. It may be a complete word or not, e.g. 
+
+fri     => friday
+frien   => friend
+friend  => friend
+friendl => friendly
+
+In addition find the most likely next letter at any given point, from the ones available.
+
+Remember that we don't really handle double letters or collisions so we have to deal with that by holding, which is annoying.
+
+tol     => tool
+told    => told
+tol_    => toll
+
+If we have spare spaces, we can offer them up for disambiguation. So maybe
+
+tol^tr  => toll
+
+It is worth looking at a corpus of words to determine letters in words which are replaceable, e.g. fi[rl]e and avoid giving these letters the same position so as to make disambiguation easier. Generally this will be good anyway as we put vowels one one ring, stops on another, etc, but there may be some more optimisation we can do. 
+
