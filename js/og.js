@@ -64,10 +64,10 @@ $('.octaglyph').each(function(){
                         	var layout = o.ogcore.findLayout(stack);
                                 for (var i in o.const.classes) {
                                 	var ogclass = o.const.classes[i];
-                                        var text = layout.continue ? layout.continue[ogclass].label : '';
-					var type = layout.continue ? 
-						layout.continue[ogclass].terminate ? 
-							layout.continue[ogclass].terminate.action : 'unterminated' : '';
+                                        var text = layout[ogclass] ? layout[ogclass].label : '';
+					var type = layout[ogclass] ? 
+						layout[ogclass].actione ? 
+							layout[ogclass].action.verb : 'unterminated' : '';
                                 	o.ogcore.setButtonText(ogclass, text);
 					o.ogcore.setButtonType(ogclass, type);
                                 }
@@ -88,40 +88,47 @@ $('.octaglyph').each(function(){
                         findLayout: function(stack){
                         	var current = [o.layout]; // to avoid modifying layout
                         	for (var i in stack){
-                                	if (!current[0].continue){
+                                	if (!current[0]){
                                 		return {};
                                         }
-                                	current = [ current[ 0 ].continue[ stack[i] ] ];
+                                	current = [ current[ 0 ][ stack[i] ] ];
                                 }
                                 return current[0];
                         },
 			loadLayout: function(layout){
-				var upgrader ;
+				var upgrader;
 				upgrader = function(original){
 					var newLayout = {
-						continue: {}
 					};
 					if (typeof original == typeof 'string'){
 						if (original == '<'){
 							return {
 								label: 'Bksp',
-								terminate: {
-									action: 'bufferUndo'
+								action: {
+									verb: 'bufferUndo'
 								}
 							}
 						}
 						return {
 							label: original,
-							terminate: {
-								action: 'append',
+							action: {
+								verb: 'append',
 								content: original
 							}
 						}
 					}
 					else if (original && typeof (original) == typeof ({})) {
+						if (typeof (original.action) == typeof ('')){
+							var appendable = original.action
+							original.action = {
+								verb: 'append',
+								content: appendable
+							};
+							newLayout.label = appendable;
+						}
 						for (var i in o.const.classes) {
 							var ogclass = o.const.classes[i]
-							newLayout.continue[ogclass] = upgrader(original[ogclass]);
+							newLayout[ogclass] = upgrader(original[ogclass]);
 						}
 						return newLayout;
 					}
@@ -179,13 +186,13 @@ $('.octaglyph').each(function(){
 						newStack.push(ogclass);
 						var action = o.ogcore.findLayout(newStack);
 						console.log (action);
-						if (action.terminate) {
-							if (action.terminate.action == 'append') {
-								o.ogcore.bufferAppend(action.terminate.content);
+						if (action.action) {
+							if (action.action.verb == 'append') {
+								o.ogcore.bufferAppend(action.action.content);
 								o.ogcore.stackClear();
 								o.ogcore.showHints(o.status.stack);
 							}
-							else if (action.terminate.action == 'bufferUndo'){
+							else if (action.action.verb == 'bufferUndo'){
 								o.ogcore.bufferUndo();
 								o.ogcore.stackClear();
 								o.ogcore.showHints(o.status.stack);

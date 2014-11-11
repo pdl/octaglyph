@@ -1,0 +1,55 @@
+{
+    "id": "http://github.com/pdl/Octaglyph/schema/draft-01.schema.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "Keyboard layout schema",
+    "definitions": {
+        "layout": {
+            "type": "object",
+            "properties": {
+				"tl": { "$ref": "#/definitions/key" },
+				"tc": { "$ref": "#/definitions/key" },
+				"tr": { "$ref": "#/definitions/key" },
+				"ml": { "$ref": "#/definitions/key" },
+				"mc": { "$ref": "#/definitions/key" },
+				"mr": { "$ref": "#/definitions/key" },
+				"bl": { "$ref": "#/definitions/key" },
+				"bc": { "$ref": "#/definitions/key" },
+				"br": { "$ref": "#/definitions/key" }
+			}
+        },
+		"continueKey": {
+            "type": "object",
+            "properties": {
+				"tl": { "$ref": "#/definitions/key" },
+				"tc": { "$ref": "#/definitions/key" },
+				"tr": { "$ref": "#/definitions/key" },
+				"ml": { "$ref": "#/definitions/key" },
+				"mc": { "$ref": "#/definitions/key" },
+				"mr": { "$ref": "#/definitions/key" },
+				"bl": { "$ref": "#/definitions/key" },
+				"bc": { "$ref": "#/definitions/key" },
+				"br": { "$ref": "#/definitions/key" },
+				"action": { "$ref": "#/definitions/action" },
+				"label": { "type": "string" }
+			}
+        },
+		"key": {
+			"anyOf": [
+				{ "$ref": "#/definitions/layout" },
+				{
+					"type": "string"
+				}
+			]
+		},
+		"verb" : {
+			"type": "string"
+		},
+		"action": {
+			"verb" : { "$ref": "#/definitions/key" },
+			"arguments" : {
+				"type": "array"
+			},
+			"required": [ "verb" ]
+		}
+    }
+}

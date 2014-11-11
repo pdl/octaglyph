@@ -4,7 +4,7 @@ structure layout
 structure key
 	has label
 		unless defined is terminate.content or ''
-	has terminate?
+	has terminate? is action
 	has continue is layout
 	has hold is array of layouts
 
@@ -29,7 +29,7 @@ All of the following do the same thing:
 {action: 'append', content: 'a'}
 
 o.plugins.capsMode - enable a shift and a caps lock. 
-o.plugins.status.capsMode
+o.status.plugins.capsMode.caps
 
 Get all biglyphs and triglyphs. Get all biglyphs and tryglyphs that are word-initial. Normalise and weight.
 
@@ -47,7 +47,7 @@ Actions
  append
  stackUndo &stackUndo
  wordComplete =thinking
- stacReplace <ê
+ stackReplace <ê
 
 
 Vowels
@@ -88,3 +88,9 @@ tol^tr  => toll
 
 It is worth looking at a corpus of words to determine letters in words which are replaceable, e.g. fi[rl]e and avoid giving these letters the same position so as to make disambiguation easier. Generally this will be good anyway as we put vowels one one ring, stops on another, etc, but there may be some more optimisation we can do. 
 
+
+Given that the compiled size is about 8mb and probably bigger in memory we probably need to be doing something clever with ajax rather than loading the whole thing sin at once and then enriching it. .
+
+
+Consider: 
+ mc = click to accept or hover for stackUndo
