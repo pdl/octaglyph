@@ -94,3 +94,24 @@ Given that the compiled size is about 8mb and probably bigger in memory we proba
 
 Consider: 
  mc = click to accept or hover for stackUndo
+
+
+Two modes of operation, tap and swipe. Ideally can switch between them
+
+mousedown > start swipe, regiser current key, register swipestart key
+mouseenter > if swipe is happening, reset and start counter and register intention key
+when counter hits target (ideally also if mouse is still in same place), add intention key to the stack. In the case of MC, remove the top from the stack and refresh the layout
+ - then restart the counter and register the intention key again
+mouseleave > if this is the swipestart, add to the stack and clear the swipestart. if counter is running, stop and reset, clear intention key, 
+mouseup > stop the counter and add intention key to the stack. if swipe is happening, perform the default action. Else if tap is happening, refresh the layout
+window loses focus - intention key and timer are cleared
+
+refactor out registerKey, stackPop
+
+move this stuff (anything which references actual HTML elements or interaction events) into ogui not ogcore. Ogcore must not call ogui
+
+NB: for mc, 
+- the performed action when hovering is different depending on whether it was registered by timer or mouseup. In mouseup it ends the swipe but not the stack, in hild it does stackundo.
+- the performed action when not 
+
+
