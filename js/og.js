@@ -165,44 +165,44 @@ $('.octaglyph').each(function(){
 	o.ogcore.loadLayout(_ogDefaultLayout);
 	
 	og.find('li').each(function(){
-			var ogclass = $(this).attr('class');
-				var btn = $(this).find('a');
-				//btn.draggbble({revert:true,helper:'clone'});
-				if (ogclass == 'mc'){
-					btn.click(function(){
+		var ogclass = $(this).attr('class');
+		var btn = $(this).find('a');
+		//btn.draggbble({revert:true,helper:'clone'});
+		if (ogclass == 'mc'){
+			btn.click(function(){
+				o.ogcore.stackClear();
+				o.ogcore.showHints(o.status.stack);
+			});
+		}
+		else {
+			btn.hover(function(){
+				o.ogcore.stackTempAppend(ogclass);
+			}, function(){
+				o.ogcore.showHints(o.status.stack);
+			}).click(function(){
+				var newStack = o.ogcore.arrayShallowCopy(o.status.stack);
+				newStack.push(ogclass);
+				var action = o.ogcore.findLayout(newStack);
+				console.log (action);
+				if (action.action) {
+					if (action.action.verb == 'append') {
+						o.ogcore.bufferAppend(action.action.content);
 						o.ogcore.stackClear();
 						o.ogcore.showHints(o.status.stack);
-					});
+					}
+					else if (action.action.verb == 'bufferUndo'){
+						o.ogcore.bufferUndo();
+						o.ogcore.stackClear();
+						o.ogcore.showHints(o.status.stack);
+					}
 				}
 				else {
-					btn.hover(function(){
-						o.ogcore.stackTempAppend(ogclass);
-					}, function(){
-						o.ogcore.showHints(o.status.stack);
-					}).click(function(){
-						var newStack = o.ogcore.arrayShallowCopy(o.status.stack);
-						newStack.push(ogclass);
-						var action = o.ogcore.findLayout(newStack);
-						console.log (action);
-						if (action.action) {
-							if (action.action.verb == 'append') {
-								o.ogcore.bufferAppend(action.action.content);
-								o.ogcore.stackClear();
-								o.ogcore.showHints(o.status.stack);
-							}
-							else if (action.action.verb == 'bufferUndo'){
-								o.ogcore.bufferUndo();
-								o.ogcore.stackClear();
-								o.ogcore.showHints(o.status.stack);
-							}
-						}
-						else {
-							o.ogcore.stackAppend(ogclass);
-						}
-					});
+					o.ogcore.stackAppend(ogclass);
 				}
-		});
-		
+			});
+		}
+	});
+	
 });
 });
 
