@@ -19,82 +19,82 @@ $('.octaglyph').each(function(){
 	var todo = function(){console.log('todo')};
 	var og = $(this);
 	var o;
-        o = {
-        	const: {
-                	classes: ['tl','tc','tr','ml','mc','mr','bl','bc','br']
-                },
-        	ogcore: {
-                	arrayShallowCopy: function(original){
-                        	var copy = [];
-                        	for (var i in original) {
-                                	copy.push(original[i]);
-                                }
-                                return copy;
-                        },
-                	bufferAppend: function(addition){
+	o = {
+		const: {
+			classes: ['tl','tc','tr','ml','mc','mr','bl','bc','br']
+		},
+		ogcore: {
+			arrayShallowCopy: function(original){
+				var copy = [];
+				for (var i in original) {
+					copy.push(original[i]);
+				}
+				return copy;
+			},
+			bufferAppend: function(addition){
 				o.status.buffer.push(addition);
 				o.ogcore.updateBufferDisplay();
 			},
 			updateBufferDisplay: function(){
 				og.find('.buffer').empty().append(o.status.buffer.join(''));
-			},
-                        bufferComplete: todo,
-                        bufferUndo: function(){
+				},
+			bufferComplete: todo,
+			bufferUndo: function(){
 				o.status.buffer.pop();
 				o.ogcore.updateBufferDisplay();
 			},
-                        setButtonText: function(button,text){
-                        	var textHolder = og.find('.'+button+'>a');
-                                textHolder.empty();
-                                if (text) { // check for definedness
-                                	textHolder.append(text);
-                                }
-                        },
-                        setButtonType: function(button,type){
-                        	var textHolder = og.find('.'+button+'>a');
+			setButtonText: function(button,text){
+				var textHolder = og.find('.'+button+'>a');
+				textHolder.empty();
+				if (text) { // check for definedness
+					textHolder.append(text);
+				}
+			},
+			setButtonType: function(button,type){
+				var textHolder = og.find('.'+button+'>a');
 				var types = ['append', 'bufferUndo', 'unterminated'];
 				for (var i in types){
-                               		textHolder.removeClass( 'og-a-' + types[i] );
+					textHolder.removeClass( 'og-a-' + types[i] );
 				}
-                                if (type) { // check for definedness
-                                	textHolder.addClass('og-a-'+type);
-                                }
-                        },
-                        showHints: function(stack){
-                        	var layout = o.ogcore.findLayout(stack);
-                                for (var i in o.const.classes) {
-                                	var ogclass = o.const.classes[i];
-                                        var text = layout[ogclass] ? layout[ogclass].label : '';
+				if (type) { // check for definedness
+					textHolder.addClass('og-a-'+type);
+				}
+			},
+			showHints: function(stack){
+				var layout = o.ogcore.findLayout(stack);
+				for (var i in o.const.classes) {
+					var ogclass = o.const.classes[i];
+					var text = layout[ogclass] ? layout[ogclass].label : '';
 					var type = layout[ogclass] ? 
 						layout[ogclass].actione ? 
 							layout[ogclass].action.verb : 'unterminated' : '';
-                                	o.ogcore.setButtonText(ogclass, text);
+					o.ogcore.setButtonText(ogclass, text);
 					o.ogcore.setButtonType(ogclass, type);
-                                }
-                        },
-                        stackTempAppend: function(ogclass){
-                        	var clonedStack = o.ogcore.arrayShallowCopy(o.status.stack);
-                                clonedStack.push(ogclass);
+				}
+			},
+			stackTempAppend: function(ogclass){
+				var clonedStack = o.ogcore.arrayShallowCopy(o.status.stack);
+				clonedStack.push(ogclass);
 				var hintedLayout = o.ogcore.findLayout(clonedStack);
 				if ( hintedLayout && hintedLayout.length ) {
-	                      		o.ogcore.showHints(clonedStack);
+					o.ogcore.showHints(clonedStack);
 				}
-                        },
-                        stackAppend: function(ogclass){
-                        	o.status.stack.push(ogclass);
-                                o.ogcore.showHints(o.status.stack);
+			},
+			stackAppend: function(ogclass){
+				o.status.stack.push(ogclass);
+				o.ogcore.showHints(o.status.stack);
 				console.log('Stack is: ',o.status.stack.join(', '));
-                        },
-                        findLayout: function(stack){
-                        	var current = [o.layout]; // to avoid modifying layout
-                        	for (var i in stack){
-                                	if (!current[0]){
-                                		return {};
-                                        }
-                                	current = [ current[ 0 ][ stack[i] ] ];
-                                }
-                                return current[0];
-                        },
+			},
+			findLayout: function(stack){
+				var current = [o.layout]; // to avoid modifying layout
+				for (var i in stack){
+					if (!current[0]){
+						return {};
+					}
+					current = [ current[ 0 ][ stack[i] ] ];
+				}
+				return current[0];
+			},
 			loadLayout: function(layout){
 				var upgrader;
 				upgrader = function(original){
@@ -145,31 +145,29 @@ $('.octaglyph').each(function(){
 				}
 				//o.ogcore.loadLayoutKey
 			},
-                        stackUndo: function(){
-                        	o.status.stack.pop();
-                                o.ogcore.showHints(o.status.stack);
-                        },
+			stackUndo: function(){
+				o.status.stack.pop();
+					o.ogcore.showHints(o.status.stack);
+			},
 			stackClear: function(){
 				o.status.stack = [];
 			}
-        	},
-                handlers: {
-
-                },
-                layout: {},
+		},
+		handlers: {},
+		layout: {},
 		status: {
-                	stack:  [],
-                	buffer: [],
+				stack:  [],
+				buffer: [],
 			bufferType: null //indicate if we are in the middle of a touch
-                }
-        };
+		}
+	};
 
 	o.ogcore.loadLayout(_ogDefaultLayout);
 	
 	og.find('li').each(function(){
-        	var ogclass = $(this).attr('class');
-                var btn = $(this).find('a');
-                //btn.draggbble({revert:true,helper:'clone'});
+			var ogclass = $(this).attr('class');
+				var btn = $(this).find('a');
+				//btn.draggbble({revert:true,helper:'clone'});
 				if (ogclass == 'mc'){
 					btn.click(function(){
 						o.ogcore.stackClear();
@@ -203,7 +201,7 @@ $('.octaglyph').each(function(){
 						}
 					});
 				}
-        });
+		});
 		
 });
 });
