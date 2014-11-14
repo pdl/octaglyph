@@ -273,6 +273,8 @@ $('.octaglyph').each(function(){
 		if (ogclass == 'mc'){
 			btn.click(function(){
 				o.ogcore.stackClear();
+				o.ogui.clearIntention();
+				o.status.swiping = 0;
 				o.ogcore.showHints(o.status.stack);
 			});
 		}
