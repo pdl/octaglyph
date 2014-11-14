@@ -62,6 +62,7 @@ $('.octaglyph').each(function(){
 			},
 			showHints: function(stack){
 				var layout = o.ogcore.findLayout(stack);
+				if (!layout) { return; }
 				for (var i in o.const.classes) {
 					var ogclass = o.const.classes[i];
 					var text = layout[ogclass] ? layout[ogclass].label : '';
@@ -70,6 +71,25 @@ $('.octaglyph').each(function(){
 							layout[ogclass].action.verb : 'unterminated' : '';
 					o.ogcore.setButtonText(ogclass, text);
 					o.ogcore.setButtonType(ogclass, type);
+				}
+			},
+			performAction: function(action) {
+				if (action.verb == 'append') {
+					o.ogcore.bufferAppend(action.content);
+					o.ogcore.stackClear();
+					o.ogcore.showHints(o.status.stack);
+				}
+				else if (action.verb == 'bufferUndo'){
+					o.ogcore.bufferUndo();
+					o.ogcore.stackClear();
+					o.ogcore.showHints(o.status.stack);
+				}
+			},
+			stackComplete: function () {
+				var layout = o.ogcore.findLayout(o.status.stack);
+				console.log (layout);
+				if (layout.action) {
+					o.ogcore.performAction(layout.action);
 				}
 			},
 			stackTempAppend: function(ogclass){
@@ -139,13 +159,13 @@ $('.octaglyph').each(function(){
 				var loadedLayout = {};
 				o.layout = upgrader(layout);
 			},
-			loadLayoutKey: function(key){
+			loadLayoutKey: function(key) {
 				var loadedKey = {};
 				if (typeof (key) == typeOf ('')) {
 				}
 				//o.ogcore.loadLayoutKey
 			},
-			stackUndo: function(){
+			stackUndo: function() {
 				o.status.stack.pop();
 					o.ogcore.showHints(o.status.stack);
 			},
@@ -156,9 +176,88 @@ $('.octaglyph').each(function(){
 		handlers: {},
 		layout: {},
 		status: {
-				stack:  [],
-				buffer: [],
-			bufferType: null //indicate if we are in the middle of a touch
+			stack:  [],
+			buffer: [],
+			swiping: 0, //indicate if we are in the middle of a touch action
+			swipeStartKey: null,
+			intentionKey: null,
+			timeoutID: null
+		},
+		ogui: {
+			registerIntention: function(key){
+				// todo: sensory feedback
+				o.status.intentionKey = key;
+				if (o.status.timeoutID) {
+					window.clearTimeout(o.status.timeoutID);
+				}
+				o.status.timeoutID = window.setTimeout( 20, function(){ o.ogui.pointer.hold(key) } );
+			},
+			clearIntention: function() {
+				if (o.timeoutID) {
+					window.clearTimeout(o.status.timeoutID);
+				}
+				o.timeoutID = null;
+				o.status.swipeStartKey = null;
+				o.status.intentionKey = null;
+			},
+			confirmIntention: function (key) {
+				if (key == 'mc') {
+					// do something special
+				}
+				else {
+					o.ogcore.stackAppend(key);
+				}
+			},
+			swipeStart: function (key) {
+				o.status.swipestart = key;
+			},
+			swipeEnd: function (key) {
+				o.ogui.confirmIntention(key);
+				o.ogcore.stackComplete();
+			},
+			pointer: {
+				up: function(key) {
+					// stop the counter and add intention key to the stack. 
+					// if swipe is happening, perform the default action. 
+					// Else if tap is happening, refresh the layout
+					o.ogui.confirmIntention(key);
+					if (o.status.swiping) {
+						o.ogcore.stackComplete();
+					}
+					else {
+						o.ogcore.stackComplete();
+					}
+					o.status.swipeStartKey = null;
+					o.status.swiping    = 0;
+				},
+				down: function(key) {
+					// start swipe, regiser current key, register swipestart key
+					if (o.status.swiping) {
+						console.log('oops');
+						// this shouldn't happen!
+					}
+					o.status.swipeStartKey = key;
+					o.ogui.registerIntention(key);
+				},
+				hold: function (key) {
+					// sensory feedback?
+					o.ogcore.stackAppend(key);
+					o.ogui.registerIntention(key);
+				},
+				enter: function (key) {
+					// if swipe is happening, reset and start counter and register intention key
+					if (o.status.swiping) {
+						o.ogui.registerIntention(key);
+					}
+				},
+				leave: function(key) {
+					if (o.status.swipeStartKey && o.status.swipeStartKey == key) {
+						o.status.swiping = 1;
+						o.ogui.confirmIntention(key);
+					} // else?
+					o.ogui.clearIntention();
+				}
+			},
 		}
 	};
 
@@ -167,7 +266,6 @@ $('.octaglyph').each(function(){
 	og.find('li').each(function(){
 		var ogclass = $(this).attr('class');
 		var btn = $(this).find('a');
-		//btn.draggbble({revert:true,helper:'clone'});
 		if (ogclass == 'mc'){
 			btn.click(function(){
 				o.ogcore.stackClear();
@@ -175,31 +273,12 @@ $('.octaglyph').each(function(){
 			});
 		}
 		else {
-			btn.hover(function(){
-				o.ogcore.stackTempAppend(ogclass);
-			}, function(){
-				o.ogcore.showHints(o.status.stack);
-			}).click(function(){
-				var newStack = o.ogcore.arrayShallowCopy(o.status.stack);
-				newStack.push(ogclass);
-				var action = o.ogcore.findLayout(newStack);
-				console.log (action);
-				if (action.action) {
-					if (action.action.verb == 'append') {
-						o.ogcore.bufferAppend(action.action.content);
-						o.ogcore.stackClear();
-						o.ogcore.showHints(o.status.stack);
-					}
-					else if (action.action.verb == 'bufferUndo'){
-						o.ogcore.bufferUndo();
-						o.ogcore.stackClear();
-						o.ogcore.showHints(o.status.stack);
-					}
-				}
-				else {
-					o.ogcore.stackAppend(ogclass);
-				}
-			});
+			btn
+				.mouseup(    function(event){ o.ogui.pointer.up    (ogclass); event.preventDefault(); } )
+				.mousedown(  function(event){ o.ogui.pointer.down  (ogclass); event.preventDefault(); } )
+				.mouseenter( function(event){ o.ogui.pointer.enter (ogclass); event.preventDefault(); } )
+				.mouseleave( function(event){ o.ogui.pointer.leave (ogclass); event.preventDefault(); } )
+			;
 		}
 	});
 	
