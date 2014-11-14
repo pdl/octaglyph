@@ -138,9 +138,9 @@ $('.octaglyph').each(function(){
 						}
 					}
 					else if (original && typeof (original) == typeof ({})) {
-						if (typeof (original.action) == typeof ('')){
+						if (typeof (original.action) == typeof ('string')){
 							var appendable = original.action
-							original.action = {
+							newLayout.action = {
 								verb: 'append',
 								content: appendable
 							};
@@ -190,13 +190,15 @@ $('.octaglyph').each(function(){
 				if (o.status.timeoutID) {
 					window.clearTimeout(o.status.timeoutID);
 				}
-				o.status.timeoutID = window.setTimeout( 20, function(){ o.ogui.pointer.hold(key) } );
+				o.status.timeoutID = window.setTimeout( function(){ 
+					console.log ("timeout on "+ key); o.ogui.pointer.hold(key) 
+				}, 800 ); // different values may be appropriate for different contexts here.
 			},
 			clearIntention: function() {
-				if (o.timeoutID) {
+				if (o.status.timeoutID) {
 					window.clearTimeout(o.status.timeoutID);
 				}
-				o.timeoutID = null;
+				o.status.timeoutID = null;
 				o.status.swipeStartKey = null;
 				o.status.intentionKey = null;
 			},
@@ -207,6 +209,7 @@ $('.octaglyph').each(function(){
 				else {
 					o.ogcore.stackAppend(key);
 				}
+				o.ogui.clearIntention()
 			},
 			swipeStart: function (key) {
 				o.status.swipestart = key;
@@ -236,6 +239,7 @@ $('.octaglyph').each(function(){
 						console.log('oops');
 						// this shouldn't happen!
 					}
+					o.status.swiping       = 0;
 					o.status.swipeStartKey = key;
 					o.ogui.registerIntention(key);
 				},
